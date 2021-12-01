@@ -14,6 +14,7 @@ namespace ExplorerWebUI.Models
     {
         public string Name { get; set; }
         public ProviderType Type { get; set; }
+        public string Path { get; set; }
         public long Size { get; set; }
 
         public static string BytesToString(long bytes)
