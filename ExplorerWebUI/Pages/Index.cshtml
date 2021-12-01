@@ -1,0 +1,20 @@
+﻿@page
+@using ExplorerWebUI.Models
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<h2>Файловый менеджер</h2>
+
+<ul>  
+    @foreach (ProviderModel item in @Model.providerModel.Where(x => x.Type == ProviderType.Directory).OrderByDescending(x => x.Size).ToList())  
+    {  
+        <li><i class="bi bi-folder"> @item.Name</i> - @ProviderModel.BytesToString(@item.Size)</li>  
+    }  
+
+    @foreach (ProviderModel item in @Model.providerModel.Where(x => x.Type == ProviderType.File).OrderByDescending(x => x.Size).ToList())
+    {
+        <li><i class="bi bi-file-earmark"> @item.Name</i> - @ProviderModel.BytesToString(@item.Size)</li>  
+    }
+</ul>  
