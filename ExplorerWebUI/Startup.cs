@@ -20,9 +20,7 @@ namespace ExplorerWebUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            IFileProvider PhysicalProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
-            services.AddSingleton<IFileProvider>(PhysicalProvider);
-            services.AddRazorPages();
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,7 +45,9 @@ namespace ExplorerWebUI
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

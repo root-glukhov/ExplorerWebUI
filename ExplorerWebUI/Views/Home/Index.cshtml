@@ -1,0 +1,63 @@
+﻿@model IEnumerable<ProviderViewModel>
+@{
+    ViewData["Title"] = "Home";
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th> Name </th>
+            <th> Size </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @*<input type="button" class="btn btn-link" value="@item.Name" path="@item.Path" />*@
+                    @if(item.Type == ProviderType.Directory)
+                    {
+                        <i class="bi bi-folder"> @Html.ActionLink(item.Name, "Index", "Home", new { path = item.Path })</i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-earmark"> @item.Name</i>
+                    }
+                </td>
+                <td> 
+                    @ProviderViewModel.BytesToString(item.Size) 
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@*@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            GetProvider();
+        });
+
+        $("input[type=button]").click(function () {
+            GetProvider($(this).attr("path"));
+        });
+
+        function GetProvider(value) {
+            $.ajax({
+                url: '/Home/Index',
+                type: 'POST',
+                cache: false,
+                async: true,
+                dataType: "html",
+                data : { path: value }
+            })
+            .done(function (result) {
+                $('#files').html(result);
+            })
+            .fail(function (xhr) {
+                console.log('error : ' + xhr.status + ' - ' + xhr.statusText + ' - ' + xhr.responseText);
+            });
+        }
+    </script>
+}*@
