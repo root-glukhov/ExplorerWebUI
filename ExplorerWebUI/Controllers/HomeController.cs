@@ -12,15 +12,8 @@ namespace ExplorerWebUI.Controllers
     {
         public IActionResult Index(string path)
         {
-            List<ProviderViewModel> providerViewModels = path == null ? ProviderViewModel.GetDrives() : ProviderViewModel.GetDirectoryFiles(path);
+            List<ProviderViewModel> providerViewModels = ProviderViewModel.GetDirectory(path);
             return View(providerViewModels);
         }
-
-        //[HttpPost]
-        //public IActionResult Index(string path)
-        //{
-        //    List<ProviderViewModel> providerViewModels = path == null ? ProviderViewModel.GetDrives() : ProviderViewModel.GetDirectoryFiles(path);
-        //    return PartialView("_GetProvider", providerViewModels);
-        //}
     }
 }

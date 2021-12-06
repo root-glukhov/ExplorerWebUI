@@ -7,38 +7,31 @@ using System.Threading.Tasks;
 
 namespace ExplorerWebUI.Models
 {
-    public enum ProviderType
-    {
-        Directory,
-        File
-    } 
-
     public class ProviderViewModel
     {
         public string Name { get; set; }
-        public ProviderType Type { get; set; }
+        public bool isDirectory { get; set; }
         public string Path { get; set; }
         public long Size { get; set; }
 
-        public static List<ProviderViewModel> GetDrives()
-        {
-            List<ProviderViewModel> drives = new List<ProviderViewModel>();
-            foreach (var drive in DriveInfo.GetDrives())
-            {
-                drives.Add(new ProviderViewModel()
-                {
-                    Name = drive.Name,
-                    Type = ProviderType.Directory,
-                    Path = drive.Name,
-                    Size = drive.TotalSize - drive.TotalFreeSpace
-                });
-            }
-            return drives.OrderByDescending(x => x.Size).ToList();
-        }
-
-        public static List<ProviderViewModel> GetDirectoryFiles(string path)
+        public static List<ProviderViewModel> GetDirectory(string path)
         {
             List<ProviderViewModel> providerViewModels = new List<ProviderViewModel>();
+
+            if (path == null)
+            {
+                foreach (var drive in DriveInfo.GetDrives())
+                {
+                    providerViewModels.Add(new ProviderViewModel()
+                    {
+                        Name = drive.Name,
+                        isDirectory = true,
+                        Path = drive.Name,
+                        Size = drive.TotalSize - drive.TotalFreeSpace
+                    });
+                }
+                return providerViewModels.OrderByDescending(x => x.Size).ToList();
+            }
 
             var dirs = Directory.GetDirectories(path);
             foreach (var dir in dirs)
@@ -50,7 +43,7 @@ namespace ExplorerWebUI.Models
                 providerViewModels.Add(new ProviderViewModel()
                 {
                     Name = dirInfo.Name,
-                    Type = ProviderType.Directory,
+                    isDirectory = true,
                     Path = dir,
                     Size = SafeEnumerateFiles(dirInfo, "*.*", SearchOption.AllDirectories).Sum(x => x.Length)
                 });
@@ -63,7 +56,7 @@ namespace ExplorerWebUI.Models
                 providerViewModels.Add(new ProviderViewModel()
                 {
                     Name = fileInfo.Name,
-                    Type = ProviderType.File,
+                    isDirectory = false,
                     Path = file,
                     Size = file.Length
                 });
