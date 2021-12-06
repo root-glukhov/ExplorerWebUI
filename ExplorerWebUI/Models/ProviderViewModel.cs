@@ -52,7 +52,7 @@ namespace ExplorerWebUI.Models
                     Name = dirInfo.Name,
                     Type = ProviderType.Directory,
                     Path = dir,
-                    Size = ProviderViewModel.GetDirectorySize(dir)
+                    Size = SafeEnumerateFiles(dirInfo, "*.*", SearchOption.AllDirectories).Sum(x => x.Length)
                 });
             }
 
@@ -82,12 +82,6 @@ namespace ExplorerWebUI.Models
             }
 
             return String.Format("{0:0.##} {1}", dblSByte, suffix[i]);
-        }
-
-        public static long GetDirectorySize(string path)
-        {
-            DirectoryInfo directoryInfo = new DirectoryInfo(path);
-            return SafeEnumerateFiles(directoryInfo, "*.*", SearchOption.AllDirectories).Sum(x => x.Length);
         }
 
         private static IEnumerable<FileInfo> SafeEnumerateFiles(DirectoryInfo dirInfo, string searchPattern, SearchOption searchOption)
