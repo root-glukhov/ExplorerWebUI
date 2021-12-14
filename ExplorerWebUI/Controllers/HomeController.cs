@@ -10,10 +10,15 @@ namespace ExplorerWebUI.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index(string path)
+        public IActionResult Index()
         {
-            List<ProviderViewModel> providerViewModels = ProviderViewModel.GetDirectory(path);
-            return View(providerViewModels);
+            return View(ExplorerViewModel.GetDirectory());
+        }
+
+        [HttpPost]
+        public IActionResult GetDirectory(string path)
+        {
+            return PartialView("_Explorer", ExplorerViewModel.GetDirectory(path));
         }
     }
 }

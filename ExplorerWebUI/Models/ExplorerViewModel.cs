@@ -7,22 +7,22 @@ using System.Threading.Tasks;
 
 namespace ExplorerWebUI.Models
 {
-    public class ProviderViewModel
+    public class ExplorerViewModel
     {
         public string Name { get; set; }
         public bool isDirectory { get; set; }
         public string Path { get; set; }
         public long Size { get; set; }
 
-        public static List<ProviderViewModel> GetDirectory(string path)
+        public static IEnumerable<ExplorerViewModel> GetDirectory(string path = "")
         {
-            List<ProviderViewModel> providerViewModels = new List<ProviderViewModel>();
+            List<ExplorerViewModel> providerViewModels = new List<ExplorerViewModel>();
 
-            if (path == null)
+            if (path == "")
             {
                 foreach (var drive in DriveInfo.GetDrives())
                 {
-                    providerViewModels.Add(new ProviderViewModel()
+                    providerViewModels.Add(new ExplorerViewModel()
                     {
                         Name = drive.Name,
                         isDirectory = true,
@@ -40,7 +40,7 @@ namespace ExplorerWebUI.Models
                 if ((dirInfo.Attributes & FileAttributes.Hidden) > 0)
                     continue;
 
-                providerViewModels.Add(new ProviderViewModel()
+                providerViewModels.Add(new ExplorerViewModel()
                 {
                     Name = dirInfo.Name,
                     isDirectory = true,
@@ -53,7 +53,7 @@ namespace ExplorerWebUI.Models
             foreach (var file in files)
             {
                 var fileInfo = new FileInfo(file);
-                providerViewModels.Add(new ProviderViewModel()
+                providerViewModels.Add(new ExplorerViewModel()
                 {
                     Name = fileInfo.Name,
                     isDirectory = false,

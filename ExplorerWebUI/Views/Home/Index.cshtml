@@ -1,33 +1,25 @@
-﻿@model IEnumerable<ProviderViewModel>
+﻿@model IEnumerable<ExplorerViewModel>
 @{
     ViewData["Title"] = "Home";
 }
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th> Name </th>
-            <th> Size </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @if(item.isDirectory)
-                    {
-                        <i class="bi bi-folder"> @Html.RouteLink(item.Name, new { path = item.Path }) </i>
-                    }
-                    else
-                    {
-                        <i class="bi bi-earmark"> @item.Name </i>
-                    }
-                </td>
-                <td> 
-                    @ProviderViewModel.BytesToString(item.Size) 
-                </td>
-            </tr>
+<form asp-action="GetDirectory"
+    data-ajax="true" data-ajax-method="POST" data-ajax-mode="replace"
+    data-ajax-update="#results" data-ajax-loading="#loading"> @* data-ajax-begin="OnBegin"> *@
+    
+    <div id="results">
+        @await Html.PartialAsync("_Explorer", Model)
+    </div>
+</form>
+
+<div id="loading" style="display:none">
+    <p>Идет загрузка...</p>
+</div>
+
+@*@section Scripts {
+    <script>
+        function OnBegin() {
+            $('#results').html('<p>Идет загрузка...</p>');
         }
-    </tbody>
-</table>
+    </script>
+}*@
