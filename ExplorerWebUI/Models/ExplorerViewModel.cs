@@ -9,6 +9,7 @@ namespace ExplorerWebUI.Models
 {
     public class ExplorerViewModel
     {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; }
         public bool isDirectory { get; set; }
         public string Path { get; set; }
@@ -30,7 +31,7 @@ namespace ExplorerWebUI.Models
                         Size = drive.TotalSize - drive.TotalFreeSpace
                     });
                 }
-                return providerViewModels.OrderByDescending(x => x.Size).ToList();
+                return providerViewModels.OrderByDescending(x => x.Size);
             }
 
             var dirs = Directory.GetDirectories(path);
@@ -44,9 +45,8 @@ namespace ExplorerWebUI.Models
                 {
                     Name = dirInfo.Name,
                     isDirectory = true,
-                    Path = dir,
-                    Size = SafeEnumerateFiles(dirInfo, "*.*", SearchOption.AllDirectories).Sum(x => x.Length)
-                });
+                    Path = dir
+                }) ;
             }
 
             var files = Directory.GetFiles(path);
@@ -61,26 +61,13 @@ namespace ExplorerWebUI.Models
                     Size = file.Length
                 });
             }
-            return providerViewModels.OrderByDescending(x => x.Size).ToList();
+            return providerViewModels.OrderByDescending(x => x.Size);
         }
 
-        public static string BytesToString(long bytes)
-        {
-            string[] suffix = { "B", "KB", "MB", "GB", "TB" };
-            int i;
-            double dblSByte = bytes;
-            for (i = 0; i < suffix.Length && bytes >= 1024; i++, bytes /= 1024)
-            {
-                dblSByte = bytes / 1024;
-            }
-
-            return String.Format("{0:0.##} {1}", dblSByte, suffix[i]);
-        }
-
-        private static IEnumerable<FileInfo> SafeEnumerateFiles(DirectoryInfo dirInfo, string searchPattern, SearchOption searchOption)
+        public static IEnumerable<FileInfo> SafeEnumerateFiles(string path, string searchPattern, SearchOption searchOption)
         {
             Stack<DirectoryInfo> dirs = new Stack<DirectoryInfo>();
-            dirs.Push(dirInfo);
+            dirs.Push(new DirectoryInfo(path));
 
             while (dirs.Count > 0)
             {

@@ -4,21 +4,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ExplorerWebUI.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index(string path = "")
         {
-            return View(ExplorerViewModel.GetDirectory());
+            return View(ExplorerViewModel.GetDirectory(path));
         }
 
         [HttpPost]
-        public IActionResult GetDirectory(string path)
+        public long GetSize(string path)
         {
-            return PartialView("_Explorer", ExplorerViewModel.GetDirectory(path));
+            return ExplorerViewModel.SafeEnumerateFiles(path, "*.*", SearchOption.AllDirectories).Sum(x => x.Length);
         }
     }
 }

@@ -3,23 +3,81 @@
     ViewData["Title"] = "Home";
 }
 
-<form asp-action="GetDirectory"
-    data-ajax="true" data-ajax-method="POST" data-ajax-mode="replace"
-    data-ajax-update="#results" data-ajax-loading="#loading"> @* data-ajax-begin="OnBegin"> *@
-    
-    <div id="results">
-        @await Html.PartialAsync("_Explorer", Model)
-    </div>
-</form>
-
-<div id="loading" style="display:none">
-    <p>Идет загрузка...</p>
-</div>
-
-@*@section Scripts {
-    <script>
-        function OnBegin() {
-            $('#results').html('<p>Идет загрузка...</p>');
+<table id="myTable" class="table table-striped">
+    <thead>
+        <tr>
+            <th> Name </th>
+            <th> Size </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                @if(item.isDirectory)
+                {
+                    <td>
+                        <i class="bi bi-folder"> @Html.ActionLink(@item.Name, "Index", new { path = @item.Path }) </i>
+                    </td>
+                    
+                } else
+                {
+                    <td>
+                        <i class="bi bi-earmark"> @item.Name </i>
+                    </td>
+                }
+                <td id="@item.Id.ToString()">
+                    ...
+                </td>
+            </tr>
         }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var model = @Html.Raw(Json.Serialize(Model));
+
+            $.each(model, function(key, data) {
+                var sizeElement = $('#'+data['id']);
+
+                if (data['isDirectory'] == true && data['size'] <= 0) {
+                    $.ajax({
+                        type: "post",
+                        url: '@Url.Action("GetSize")',
+                        data: { path: data['path'] },
+                        success: function(response) {
+                            sizeElement.attr('size', response);
+                            sizeElement.html(formatBytes(response));
+                            sortTable();
+                        }
+                    });
+                } else {
+                    sizeElement.attr('size', data['size']);
+                    sizeElement.html(formatBytes(data['size']));
+                }
+            });
+
+            function sortTable() {
+	            var table = $('table');
+                var tbody = table.find('tbody');
+  
+                tbody.find('tr').sort(function(a, b) {
+    	            return +$(b).find('td:last').attr('size') - +$(a).find('td:last').attr('size');
+  	            }).appendTo(tbody);  
+            }
+
+            function formatBytes(bytes) {
+                if (bytes === 0) 
+                    return '0 Bytes';
+
+                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+
+                const i = Math.floor(Math.log(bytes) / Math.log(1024));
+
+                return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+        });
     </script>
-}*@
+}
